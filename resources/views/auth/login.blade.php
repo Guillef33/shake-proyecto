@@ -39,6 +39,12 @@
                     </a>
                 @endif
 
+                <a href="{{ route('auth.google') }}">
+                    <x-jet-button class="ml-4" type="button">
+                        {{ __('Google') }}
+                    </x-jet-button>
+                </a>
+
                 <x-jet-button class="ml-4">
                     {{ __('Log in') }}
                 </x-jet-button>

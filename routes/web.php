@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +23,28 @@ Route::get('/', function () {
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
+
+Route::get('/auth/redirect', function () {
+    return Socialite::driver('google')->stateless()->redirect();
+})->name('auth.google');
+
+Route::get('/auth/callback', function () {
+    $user = Socialite::driver('google')->stateless()->user();
+    $userCol = User::where('provider_id', $user->id)->first();
+
+    if ($userCol) {
+        Auth::login($userCol);
+        return redirect('/dashboard');
+    } else {
+        $addUser = User::create([
+            'name' => $user->name,
+            'email' => $user->email,
+            'provider_id' => $user->id,
+            'password' => encrypt('helloadmin')
+        ]);
+    }
+    Auth::login($addUser);
+    return view('dashboard');
+
+    // $user->token
+});
